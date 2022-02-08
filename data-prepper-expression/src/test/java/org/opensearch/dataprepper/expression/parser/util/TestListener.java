@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptBaseListener;
-import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptParser;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementBaseListener;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,39 +26,39 @@ import java.util.Stack;
  * for easy assertions. Parsing errors are tracked in {@link TestListener#errorNodeList} and
  * {@link TestListener#exceptionList}. For hamcrest assertions {@link ListenerMatcher}.
  */
-public class TestListener extends DataPrepperScriptBaseListener {
+public class TestListener extends DataPrepperStatementBaseListener {
     private static final Logger LOG = LoggerFactory.getLogger(TestListener.class);
 
     private static final String ESCAPED_FORWARD_SLASH = "|escaped-forward-slash|";
     private static final String ESCAPED_DOUBLE_QUOTE = "|escaped-double-quote|";
 
     private static final List<Integer> PARENTHESIS_SYMBOL_TYPES = Arrays.asList(
-            DataPrepperScriptParser.LPAREN,
-            DataPrepperScriptParser.RPAREN
+            DataPrepperStatementParser.LPAREN,
+            DataPrepperStatementParser.RPAREN
     );
     private static final List<Integer> KEY_SYMBOL_TYPES = Arrays.asList(
-            DataPrepperScriptParser.EQUAL,
-            DataPrepperScriptParser.NOT_EQUAL,
-            DataPrepperScriptParser.LT,
-            DataPrepperScriptParser.LTE,
-            DataPrepperScriptParser.GT,
-            DataPrepperScriptParser.GTE,
-            DataPrepperScriptParser.MATCH_REGEX_PATTERN,
-            DataPrepperScriptParser.NOT_MATCH_REGEX_PATTERN,
-            DataPrepperScriptParser.IN_LIST,
-            DataPrepperScriptParser.NOT_IN_LIST,
-            DataPrepperScriptParser.AND,
-            DataPrepperScriptParser.OR,
-            DataPrepperScriptParser.NOT,
-            DataPrepperScriptParser.LBRACK,
-            DataPrepperScriptParser.RBRACK,
-            DataPrepperScriptParser.TRUE,
-            DataPrepperScriptParser.FALSE,
-            DataPrepperScriptParser.FORWARDSLASH,
-            DataPrepperScriptParser.DOUBLEQUOTE,
-            DataPrepperScriptParser.LISTSEPARATOR,
-            DataPrepperScriptParser.SPACE,
-            DataPrepperScriptParser.OTHER
+            DataPrepperStatementParser.EQUAL,
+            DataPrepperStatementParser.NOT_EQUAL,
+            DataPrepperStatementParser.LT,
+            DataPrepperStatementParser.LTE,
+            DataPrepperStatementParser.GT,
+            DataPrepperStatementParser.GTE,
+            DataPrepperStatementParser.MATCH_REGEX_PATTERN,
+            DataPrepperStatementParser.NOT_MATCH_REGEX_PATTERN,
+            DataPrepperStatementParser.IN_LIST,
+            DataPrepperStatementParser.NOT_IN_LIST,
+            DataPrepperStatementParser.AND,
+            DataPrepperStatementParser.OR,
+            DataPrepperStatementParser.NOT,
+            DataPrepperStatementParser.LBRACK,
+            DataPrepperStatementParser.RBRACK,
+            DataPrepperStatementParser.TRUE,
+            DataPrepperStatementParser.FALSE,
+            DataPrepperStatementParser.FORWARDSLASH,
+            DataPrepperStatementParser.DOUBLEQUOTE,
+            DataPrepperStatementParser.LISTSEPARATOR,
+            DataPrepperStatementParser.SPACE,
+            DataPrepperStatementParser.OTHER
     );
 
     private final ObjectMapper mapper = new ObjectMapper();
@@ -74,19 +74,19 @@ public class TestListener extends DataPrepperScriptBaseListener {
     public void visitTerminal(final TerminalNode node) {
         super.visitTerminal(node);
 
-        if (node.getSymbol().getType() == DataPrepperScriptParser.Integer) {
+        if (node.getSymbol().getType() == DataPrepperStatementParser.Integer) {
             final Integer terminal = Integer.parseInt(node.getSymbol().getText());
             stack.peek().add(terminal);
         }
-        else if (node.getSymbol().getType() == DataPrepperScriptParser.Float) {
+        else if (node.getSymbol().getType() == DataPrepperStatementParser.Float) {
             final Float terminal = Float.parseFloat(node.getSymbol().getText());
             stack.peek().add(terminal);
         }
-        else if (node.getSymbol().getType() == DataPrepperScriptParser.Boolean) {
+        else if (node.getSymbol().getType() == DataPrepperStatementParser.Boolean) {
             final Boolean terminal = Boolean.parseBoolean(node.getSymbol().getText());
             stack.peek().add(terminal);
         }
-        else if (node.getSymbol().getType() == DataPrepperScriptParser.JsonPointer) {
+        else if (node.getSymbol().getType() == DataPrepperStatementParser.JsonPointer) {
             String jsonPointer = node.getSymbol().getText();
             if (jsonPointer.startsWith("\"")) {
                 // Remove surrounding " on json pointer
@@ -98,7 +98,7 @@ public class TestListener extends DataPrepperScriptBaseListener {
             }
             stack.peek().add(jsonPointer);
         }
-        else if (node.getSymbol().getType() == DataPrepperScriptParser.String) {
+        else if (node.getSymbol().getType() == DataPrepperStatementParser.String) {
             String stringNode = node.getSymbol().getText();
             // Remove surrounding " on strings
             stringNode = stringNode.substring(1, stringNode.length() - 1);
@@ -112,7 +112,7 @@ public class TestListener extends DataPrepperScriptBaseListener {
         else if (PARENTHESIS_SYMBOL_TYPES.contains(node.getSymbol().getType())) {
             LOG.debug("Token {} not added to statement array", node.getSymbol().getText());
         }
-        else if (node.getSymbol().getType() == DataPrepperScriptParser.EOF) {
+        else if (node.getSymbol().getType() == DataPrepperStatementParser.EOF) {
             LOG.debug("End of statement reached");
         }
         else {
@@ -145,47 +145,47 @@ public class TestListener extends DataPrepperScriptBaseListener {
     }
 
     @Override
-    public void enterStatement(final DataPrepperScriptParser.StatementContext ctx) {
+    public void enterStatement(final DataPrepperStatementParser.StatementContext ctx) {
         super.enterStatement(ctx);
     }
 
     @Override
-    public void exitStatement(final DataPrepperScriptParser.StatementContext ctx) {
+    public void exitStatement(final DataPrepperStatementParser.StatementContext ctx) {
         super.exitStatement(ctx);
     }
 
     @Override
-    public void enterExpression(final DataPrepperScriptParser.ExpressionContext ctx) {
+    public void enterExpression(final DataPrepperStatementParser.ExpressionContext ctx) {
         super.enterExpression(ctx);
         enterNode(ctx);
     }
 
     @Override
-    public void exitExpression(final DataPrepperScriptParser.ExpressionContext ctx) {
+    public void exitExpression(final DataPrepperStatementParser.ExpressionContext ctx) {
         super.exitExpression(ctx);
         exitNode(ctx);
     }
 
     @Override
-    public void enterListInitializer(final DataPrepperScriptParser.ListInitializerContext ctx) {
+    public void enterListInitializer(final DataPrepperStatementParser.ListInitializerContext ctx) {
         super.enterListInitializer(ctx);
         enterNode(ctx);
     }
 
     @Override
-    public void exitListInitializer(final DataPrepperScriptParser.ListInitializerContext ctx) {
+    public void exitListInitializer(final DataPrepperStatementParser.ListInitializerContext ctx) {
         super.exitListInitializer(ctx);
         exitNode(ctx);
     }
 
     @Override
-    public void enterRegexPattern(final DataPrepperScriptParser.RegexPatternContext ctx) {
+    public void enterRegexPattern(final DataPrepperStatementParser.RegexPatternContext ctx) {
         super.enterRegexPattern(ctx);
         enterNode(ctx);
     }
 
     @Override
-    public void exitRegexPattern(final DataPrepperScriptParser.RegexPatternContext ctx) {
+    public void exitRegexPattern(final DataPrepperStatementParser.RegexPatternContext ctx) {
         super.exitRegexPattern(ctx);
         exitNode(ctx);
     }

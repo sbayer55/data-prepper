@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-grammar DataPrepperScript;
+grammar DataPrepperStatement;
 
 @header {
     package org.opensearch.dataprepper.expression.antlr;

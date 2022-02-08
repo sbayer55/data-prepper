@@ -9,8 +9,8 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptListener;
-import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptParser;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementListener;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  * LogListener is a utility listener that logs every event enter and exit. Useful for debugging and developing new
  * listeners.
  */
-public class LogListener implements DataPrepperScriptListener {
+public class LogListener implements DataPrepperStatementListener {
     private static final Logger LOG = LoggerFactory.getLogger(LogListener.class);
 
     private int level = 0;
@@ -59,8 +59,8 @@ public class LogListener implements DataPrepperScriptListener {
                         if (tree instanceof TerminalNode) {
                             return Stream.of((TerminalNode) tree);
                         }
-                        else if (tree instanceof DataPrepperScriptParser.LiteralContext){
-                            return getTerminalNodes((DataPrepperScriptParser.LiteralContext) tree).stream();
+                        else if (tree instanceof org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser.LiteralContext){
+                            return getTerminalNodes((org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser.LiteralContext) tree).stream();
                         }
                         else {
                             return Stream.empty();
@@ -94,26 +94,26 @@ public class LogListener implements DataPrepperScriptListener {
     }
 
     @Override
-    public void enterStatement(final DataPrepperScriptParser.StatementContext ctx) {
+    public void enterStatement(final DataPrepperStatementParser.StatementContext ctx) {
         LOG.info("{}enterStatement: {}", prefix(), ctx.getText());
         level++;
     }
 
     @Override
-    public void exitStatement(final DataPrepperScriptParser.StatementContext ctx) {
+    public void exitStatement(final DataPrepperStatementParser.StatementContext ctx) {
         level--;
         LOG.info("{}exitStatement: {}", prefix(), ctx.getText());
     }
 
     @Override
-    public void enterExpression(final DataPrepperScriptParser.ExpressionContext ctx) {
+    public void enterExpression(final DataPrepperStatementParser.ExpressionContext ctx) {
         final String terminals = getTerminalString(ctx);
         LOG.info("{}enterExpression: {} -> Terminal: {}", prefix(), ctx.getText(), terminals);
         level++;
     }
 
     @Override
-    public void exitExpression(final DataPrepperScriptParser.ExpressionContext ctx) {
+    public void exitExpression(final DataPrepperStatementParser.ExpressionContext ctx) {
         final String terminals = getTerminalString(ctx);
         level--;
         LOG.info("{}exitExpression: {} -> Terminal: {}", prefix(), ctx.getText(), terminals);
@@ -121,62 +121,62 @@ public class LogListener implements DataPrepperScriptListener {
 
 
     @Override
-    public void enterPrimary(final DataPrepperScriptParser.PrimaryContext ctx) {
+    public void enterPrimary(final DataPrepperStatementParser.PrimaryContext ctx) {
         LOG.info("{}enterPrimary: {}", prefix(), ctx.getText());
         level++;
 
     }
 
     @Override
-    public void exitPrimary(final DataPrepperScriptParser.PrimaryContext ctx) {
+    public void exitPrimary(final DataPrepperStatementParser.PrimaryContext ctx) {
         level--;
         LOG.info("{}exitPrimary: {}", prefix(), ctx.getText());
     }
 
     @Override
-    public void enterRegexPattern(final DataPrepperScriptParser.RegexPatternContext ctx) {
+    public void enterRegexPattern(final DataPrepperStatementParser.RegexPatternContext ctx) {
         LOG.info("{}enterRegexPattern: {}", prefix(), ctx.getText());
         level++;
     }
 
     @Override
-    public void exitRegexPattern(final DataPrepperScriptParser.RegexPatternContext ctx) {
+    public void exitRegexPattern(final DataPrepperStatementParser.RegexPatternContext ctx) {
         level--;
         LOG.info("{}exitRegexPattern: {}", prefix(), ctx.getText());
     }
 
     @Override
-    public void enterExpressionInitializer(final DataPrepperScriptParser.ExpressionInitializerContext ctx) {
+    public void enterExpressionInitializer(final DataPrepperStatementParser.ExpressionInitializerContext ctx) {
         LOG.info("{}enterExpressionInitializer: {}", prefix(), ctx.getText());
         level++;
     }
 
     @Override
-    public void exitExpressionInitializer(final DataPrepperScriptParser.ExpressionInitializerContext ctx) {
+    public void exitExpressionInitializer(final DataPrepperStatementParser.ExpressionInitializerContext ctx) {
         level--;
         LOG.info("{}exitExpressionInitializer: {}", prefix(), ctx.getText());
     }
 
     @Override
-    public void enterListInitializer(final DataPrepperScriptParser.ListInitializerContext ctx) {
+    public void enterListInitializer(final DataPrepperStatementParser.ListInitializerContext ctx) {
         LOG.info("{}enterListInitializer: {}", prefix(), ctx.getText());
         level++;
     }
 
     @Override
-    public void exitListInitializer(final DataPrepperScriptParser.ListInitializerContext ctx) {
+    public void exitListInitializer(final DataPrepperStatementParser.ListInitializerContext ctx) {
         level--;
         LOG.info("{}exitListInitializer: {}", prefix(), ctx.getText());
     }
 
     @Override
-    public void enterLiteral(final DataPrepperScriptParser.LiteralContext ctx) {
+    public void enterLiteral(final DataPrepperStatementParser.LiteralContext ctx) {
         LOG.info("{}enterLiteral: {}", prefix(), ctx.getText());
         level++;
     }
 
     @Override
-    public void exitLiteral(final DataPrepperScriptParser.LiteralContext ctx) {
+    public void exitLiteral(final DataPrepperStatementParser.LiteralContext ctx) {
         level--;
         LOG.info("{}exitLiteral: {}", prefix(), ctx.getText());
     }

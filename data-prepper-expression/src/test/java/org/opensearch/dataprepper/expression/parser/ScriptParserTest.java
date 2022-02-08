@@ -43,6 +43,7 @@ class ScriptParserTest {
     @Test
     public void testEqualityOperator() {
         parseStatement("true==false");
+        // [[[[[[[true]], [[===]], [[false]]]]]]]
 
         assertThat(listener, ListenerMatcher.isValid());
         assertThat(listener.toString(), is("[[true],'==',[false]]"));

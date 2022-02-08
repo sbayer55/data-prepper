@@ -11,8 +11,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.IntStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptLexer;
-import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptParser;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementLexer;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,20 +25,20 @@ public class ScriptParser {
     private static final Logger LOG = LoggerFactory.getLogger(ScriptParser.class);
     private static final CharStream EMPTY_STREAM = CharStreams.fromString("");
 
-    private final DataPrepperScriptLexer lexer;
-    private final DataPrepperScriptParser parser;
+    private final DataPrepperStatementLexer lexer;
+    private final DataPrepperStatementParser parser;
 
     public ScriptParser() {
-        lexer = new DataPrepperScriptLexer(EMPTY_STREAM);
+        lexer = new DataPrepperStatementLexer(EMPTY_STREAM);
 
         final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        parser = new DataPrepperScriptParser(tokenStream);
+        parser = new DataPrepperStatementParser(tokenStream);
     }
 
     /**
      * @since 1.3
-     * Parse a statement String to Antlr ParseTree format. Uses DataPrepperScriptLexer used to generate a token stream.
-     * Then DataPrepperScriptParser generates a ParseTree by applying grammar rules to the token stream.
+     * Parse a statement String to Antlr ParseTree format. Uses DataPrepperStatementLexer used to generate a token stream.
+     * Then DataPrepperStatementParser generates a ParseTree by applying grammar rules to the token stream.
      * @param statement String to be parsed
      * @return ParseTree representing hierarchy of the parsed statement by operation precedence
      */
