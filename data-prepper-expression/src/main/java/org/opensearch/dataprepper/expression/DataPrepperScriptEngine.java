@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.script;
+package org.opensearch.dataprepper.expression;
 
 import com.amazon.dataprepper.model.event.Event;
-import org.opensearch.dataprepper.script.parser.ScriptParser;
+import org.opensearch.dataprepper.expression.parser.ScriptParser;
 
 public class DataPrepperScriptEngine implements ScriptEngine {
     private final ScriptParser parser;

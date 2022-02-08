@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.script.parser.util;
+package org.opensearch.dataprepper.expression.parser.util;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

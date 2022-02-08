@@ -6,7 +6,7 @@
 grammar DataPrepperScript;
 
 @header {
-    package org.opensearch.dataprepper.script.antlr;
+    package org.opensearch.dataprepper.expression.antlr;
 }
 
 fragment

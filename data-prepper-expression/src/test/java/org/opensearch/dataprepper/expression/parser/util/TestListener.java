@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.script.parser.util;
+package org.opensearch.dataprepper.expression.parser.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.opensearch.dataprepper.script.antlr.DataPrepperScriptParser;
-import org.opensearch.dataprepper.script.parser.LogListener;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptBaseListener;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ import java.util.Stack;
  * for easy assertions. Parsing errors are tracked in {@link TestListener#errorNodeList} and
  * {@link TestListener#exceptionList}. For hamcrest assertions {@link ListenerMatcher}.
  */
-public class TestListener extends LogListener {
+public class TestListener extends DataPrepperScriptBaseListener {
     private static final Logger LOG = LoggerFactory.getLogger(TestListener.class);
 
     private static final String ESCAPED_FORWARD_SLASH = "|escaped-forward-slash|";

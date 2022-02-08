@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.script.parser;
+package org.opensearch.dataprepper.expression.parser;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.opensearch.dataprepper.script.parser.util.ListenerMatcher;
-import org.opensearch.dataprepper.script.parser.util.TestListener;
+import org.opensearch.dataprepper.expression.parser.util.ListenerMatcher;
+import org.opensearch.dataprepper.expression.parser.util.TestListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

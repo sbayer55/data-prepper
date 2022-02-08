@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.script.parser;
+package org.opensearch.dataprepper.expression.parser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.opensearch.dataprepper.script.antlr.DataPrepperScriptListener;
-import org.opensearch.dataprepper.script.antlr.DataPrepperScriptParser;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptListener;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperScriptParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
