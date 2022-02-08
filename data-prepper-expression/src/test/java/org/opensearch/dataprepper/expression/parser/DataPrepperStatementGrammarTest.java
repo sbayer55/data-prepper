@@ -5,11 +5,18 @@
 
 package org.opensearch.dataprepper.expression.parser;
 
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.IntStream;
+import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementLexer;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser;
 import org.opensearch.dataprepper.expression.parser.util.ListenerMatcher;
 import org.opensearch.dataprepper.expression.parser.util.TestListener;
 import org.slf4j.Logger;
@@ -19,22 +26,34 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-class ScriptParserTest {
-    private static final Logger LOG = LoggerFactory.getLogger(ScriptParserTest.class);
+class DataPrepperStatementGrammarTest {
+    private static final Logger LOG = LoggerFactory.getLogger(DataPrepperStatementGrammarTest.class);
+    private static final CharStream EMPTY_STREAM = CharStreams.fromString("");
 
-    private ScriptParser scriptParser;
+    private DataPrepperStatementLexer lexer;
+    private DataPrepperStatementParser parser;
+
     private TestListener listener;
     private ParseTreeWalker walker;
 
     @BeforeEach
     public void beforeEach() {
-        scriptParser = new ScriptParser();
+        lexer = new DataPrepperStatementLexer(EMPTY_STREAM);
+
+        final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+        parser = new DataPrepperStatementParser(tokenStream);
+
         listener = new TestListener();
         walker = new ParseTreeWalker();
     }
 
-    private void parseStatement(final String statement) {
-        final ParseTree parseTree = scriptParser.parse(statement);
+    private void parseStatement(final String statement) {final IntStream input = CharStreams.fromString(statement);
+        lexer.setInputStream(input);
+
+        final TokenStream tokenStream = new CommonTokenStream(lexer);
+        parser.setTokenStream(tokenStream);
+
+        final ParseTree parseTree = parser.statement();
         walker.walk(listener, parseTree);
 
         LOG.info("JSON:\n{}", listener.toPrettyString());

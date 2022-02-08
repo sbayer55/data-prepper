@@ -7,14 +7,16 @@ package org.opensearch.dataprepper.expression;
 
 import com.amazon.dataprepper.model.event.Event;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.opensearch.dataprepper.expression.evaluate.Evaluator;
-import org.opensearch.dataprepper.expression.parser.ScriptParser;
 
+/**
+ * Public class that {@link com.amazon.dataprepper.model.processor.Processor},
+ * {@link com.amazon.dataprepper.model.sink.Sink} and data-prepper-core objects can use to evaluate statements.
+ */
 public class ConditionalStatementEvaluator implements StatementEvaluator<Boolean> {
-    private final ScriptParser parser;
-    private final Evaluator<ParseTree> evaluator;
+    private final Parser<ParseTree> parser;
+    private final Evaluator<ParseTree, Event> evaluator;
 
-    public ConditionalStatementEvaluator(final ScriptParser parser, final Evaluator<ParseTree> evaluator) {
+    public ConditionalStatementEvaluator(final Parser<ParseTree> parser, final Evaluator<ParseTree, Event> evaluator) {
         this.parser = parser;
         this.evaluator = evaluator;
     }

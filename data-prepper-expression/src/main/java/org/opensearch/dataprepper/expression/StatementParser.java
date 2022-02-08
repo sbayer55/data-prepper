@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.expression.parser;
+package org.opensearch.dataprepper.expression;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -21,14 +21,14 @@ import org.slf4j.LoggerFactory;
  * ScriptParser is an abstraction layer to interface with Antlr generated classes from DataPrepperScript.g4 grammar
  * file for parsing statements
  */
-public class ScriptParser {
-    private static final Logger LOG = LoggerFactory.getLogger(ScriptParser.class);
+class StatementParser implements Parser<ParseTree> {
+    private static final Logger LOG = LoggerFactory.getLogger(StatementParser.class);
     private static final CharStream EMPTY_STREAM = CharStreams.fromString("");
 
     private final DataPrepperStatementLexer lexer;
     private final DataPrepperStatementParser parser;
 
-    public ScriptParser() {
+    public StatementParser() {
         lexer = new DataPrepperStatementLexer(EMPTY_STREAM);
 
         final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
@@ -39,6 +39,9 @@ public class ScriptParser {
      * @since 1.3
      * Parse a statement String to Antlr ParseTree format. Uses DataPrepperStatementLexer used to generate a token stream.
      * Then DataPrepperStatementParser generates a ParseTree by applying grammar rules to the token stream.
+     *
+     * @see Parser#parse(String)
+     *
      * @param statement String to be parsed
      * @return ParseTree representing hierarchy of the parsed statement by operation precedence
      */
