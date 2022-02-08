@@ -9,30 +9,41 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.IntStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.TokenSource;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementLexer;
 import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * @since 1.3
  * ScriptParser is an abstraction layer to interface with Antlr generated classes from DataPrepperScript.g4 grammar
  * file for parsing statements
  */
+@Named
 class StatementParser implements Parser<ParseTree> {
     private static final Logger LOG = LoggerFactory.getLogger(StatementParser.class);
     private static final CharStream EMPTY_STREAM = CharStreams.fromString("");
 
-    private final DataPrepperStatementLexer lexer;
+    private final Lexer lexer;
     private final DataPrepperStatementParser parser;
 
-    public StatementParser() {
-        lexer = new DataPrepperStatementLexer(EMPTY_STREAM);
+    @Inject
+    public StatementParser(final DataPrepperStatementParser parser) {
+        this.parser = parser;
 
-        final CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-        parser = new DataPrepperStatementParser(tokenStream);
+        final TokenSource tokenSource = parser.getTokenStream().getTokenSource();
+        if (tokenSource instanceof Lexer) {
+            lexer = (Lexer) tokenSource;
+        }
+        else {
+            throw new ClassCastException("Expected DataPrepperStatementParser token source to be instance of Lexer");
+        }
     }
 
     /**

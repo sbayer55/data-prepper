@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.expression.parser.util;
+package org.opensearch.dataprepper.expression.util;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementListener;
 import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser;
+import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser.LiteralContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +60,8 @@ public class LogListener implements DataPrepperStatementListener {
                         if (tree instanceof TerminalNode) {
                             return Stream.of((TerminalNode) tree);
                         }
-                        else if (tree instanceof org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser.LiteralContext){
-                            return getTerminalNodes((org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser.LiteralContext) tree).stream();
+                        else if (tree instanceof LiteralContext){
+                            return getTerminalNodes((LiteralContext) tree).stream();
                         }
                         else {
                             return Stream.empty();

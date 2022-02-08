@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.dataprepper.expression.parser;
+package org.opensearch.dataprepper.expression;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementLexer;
 import org.opensearch.dataprepper.expression.antlr.DataPrepperStatementParser;
-import org.opensearch.dataprepper.expression.parser.util.ListenerMatcher;
-import org.opensearch.dataprepper.expression.parser.util.TestListener;
+import org.opensearch.dataprepper.expression.util.ListenerMatcher;
+import org.opensearch.dataprepper.expression.util.TestListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +62,6 @@ class DataPrepperStatementGrammarTest {
     @Test
     public void testEqualityOperator() {
         parseStatement("true==false");
-        // [[[[[[[true]], [[===]], [[false]]]]]]]
 
         assertThat(listener, ListenerMatcher.isValid());
         assertThat(listener.toString(), is("[[true],'==',[false]]"));
