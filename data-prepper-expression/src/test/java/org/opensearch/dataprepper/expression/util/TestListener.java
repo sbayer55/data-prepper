@@ -37,6 +37,7 @@ public class TestListener extends DataPrepperStatementBaseListener {
             DataPrepperStatementParser.RPAREN
     );
     private static final List<Integer> KEY_SYMBOL_TYPES = Arrays.asList(
+            DataPrepperStatementParser.EOF,
             DataPrepperStatementParser.EQUAL,
             DataPrepperStatementParser.NOT_EQUAL,
             DataPrepperStatementParser.LT,
@@ -66,6 +67,8 @@ public class TestListener extends DataPrepperStatementBaseListener {
     private final List<ErrorNode> errorNodeList = new LinkedList<>();
     private final List<Exception> exceptionList = new LinkedList<>();
     private final Stack<ArrayNode> stack = new Stack<>();
+    private final List<String> verboseTokenList = new LinkedList<>();
+    private String verboseString = "";
 
     public TestListener() {
     }
@@ -73,6 +76,8 @@ public class TestListener extends DataPrepperStatementBaseListener {
     @Override
     public void visitTerminal(final TerminalNode node) {
         super.visitTerminal(node);
+
+        verboseTokenList.add(node.getSymbol().getText());
 
         if (node.getSymbol().getType() == DataPrepperStatementParser.Integer) {
             final Integer terminal = Integer.parseInt(node.getSymbol().getText());
@@ -147,11 +152,13 @@ public class TestListener extends DataPrepperStatementBaseListener {
     @Override
     public void enterStatement(final DataPrepperStatementParser.StatementContext ctx) {
         super.enterStatement(ctx);
+        enterNode(ctx);
     }
 
     @Override
     public void exitStatement(final DataPrepperStatementParser.StatementContext ctx) {
         super.exitStatement(ctx);
+        exitNode(ctx);
     }
 
     @Override
@@ -196,6 +203,26 @@ public class TestListener extends DataPrepperStatementBaseListener {
         errorNodeList.add(node);
     }
 
+    private void popVerboseTokens() {
+        final String tokens = String.join(",", verboseTokenList);
+        verboseTokenList.clear();
+        verboseString += tokens;
+    }
+
+    @Override
+    public void enterEveryRule(final ParserRuleContext ctx) {
+        super.enterEveryRule(ctx);
+        popVerboseTokens();
+        verboseString += "[";
+    }
+
+    @Override
+    public void exitEveryRule(final ParserRuleContext ctx) {
+        super.exitEveryRule(ctx);
+        popVerboseTokens();
+        verboseString += "]";
+    }
+
     /**
      * Formats JSON array to a less escaped syntax for testing. Strings will be surrounded by ' character instead of ".
      * Examples: "hello" -> 'hello'. "hello \"world\"" -> 'hello \"world\"'. An assertion statement for hello world
@@ -204,11 +231,21 @@ public class TestListener extends DataPrepperStatementBaseListener {
      */
     @Override
     public String toString() {
-        return statementArray.toString()
+        String simpleString = statementArray.toString()
                 .replace("\\\"", ESCAPED_DOUBLE_QUOTE)
                 .replace("\"", "'")
                 .replace(ESCAPED_DOUBLE_QUOTE, "\\\"")
-                .replace(ESCAPED_FORWARD_SLASH, "\\/");
+                .replace(ESCAPED_FORWARD_SLASH, "\\/")
+                .replace(",'<EOF>'", "")
+                .replace("'[',", "")
+                .replace(",']'", "")
+                .replace(",',',", ",");
+        simpleString = simpleString.substring(1, simpleString.length() - 1);
+        return simpleString;
+    }
+
+    public String toVerboseString() {
+        return verboseString;
     }
 
     public List<ErrorNode> getErrorNodeList() {

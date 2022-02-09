@@ -184,7 +184,7 @@ public class LogListener implements DataPrepperStatementListener {
 
     @Override
     public void visitTerminal(final TerminalNode node) {
-        LOG.info("{}visitTerminal: {}", prefix(), node.getText());
+        LOG.info("{}visitTerminal: {}", prefix(), node.getSymbol().getText());
     }
 
     /**
@@ -200,14 +200,15 @@ public class LogListener implements DataPrepperStatementListener {
      */
     @Override
     public void visitErrorNode(final ErrorNode node) {
-        LOG.warn("visitErrorNode: {}", node.getText());
+        LOG.warn("{}visitErrorNode: {}", prefix(), node.getSymbol().getText());
 
         final Token symbol = node.getSymbol();
         final String sourceStatement = symbol.getInputStream().toString();
         final String locationIdentifier = nCopiesOf(symbol.getCharPositionInLine(), " ") + '^';
         LOG.error(
-                "Parsing error {} at position {}\n{}\n{}",
-                node.getText(),
+                "{}Parsing error {} at position {}\n{}\n{}",
+                prefix(),
+                node.getSymbol().getText(),
                 symbol.getCharPositionInLine(),
                 sourceStatement,
                 locationIdentifier
@@ -216,16 +217,18 @@ public class LogListener implements DataPrepperStatementListener {
 
     @Override
     public void enterEveryRule(final ParserRuleContext ctx) {
+        LOG.trace("{}enterEveryRule: {}", prefix(), ctx.getText());
         if (ctx.exception != null) {
-            LOG.error("Parser exception {} thrown parsing {} on enter rule", ctx.exception, ctx.getText());
+            LOG.error("{}Parser exception {} thrown parsing {} on enter rule", prefix(), ctx.exception, ctx.getText());
         }
     }
 
     @Override
     public void exitEveryRule(final ParserRuleContext ctx) {
+        LOG.trace("{}exitEveryRule: {}", prefix(), ctx.getText());
         if (ctx.exception != null) {
             // Log errors will be printed by enterEveryRule
-            LOG.trace("Parser exception {} thrown parsing {} on exit rule", ctx.exception, ctx.getText());
+            LOG.trace("{}Parser exception {} thrown parsing {} on exit rule", prefix(), ctx.exception, ctx.getText());
         }
     }
 }

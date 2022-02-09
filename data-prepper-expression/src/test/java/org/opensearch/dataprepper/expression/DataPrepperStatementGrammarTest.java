@@ -264,6 +264,12 @@ class DataPrepperStatementGrammarTest {
     }
 
     @Test
+    public void testMissingParameters() {
+        parseStatement("==");
+        assertThat(listener, ListenerMatcher.hasError());
+    }
+
+    @Test
     public void testNotOperator() {
         parseStatement("not (5 not in [1]) or not \"in\"");
         assertThat(listener, ListenerMatcher.isValid());
