@@ -219,6 +219,7 @@ class DataPrepperStatementGrammarTest {
 
     private Executable assertThatHasParseError(final String statement) {
         return () -> {
+            listener = new TestListener();
             parseStatement(statement);
             assertThat(listener, ListenerMatcher.hasError());
         };
@@ -233,16 +234,19 @@ class DataPrepperStatementGrammarTest {
                 assertThatHasParseError(".10"),
                 assertThatHasParseError("1.10"),
                 () -> {
+                    listener = new TestListener();
                     parseStatement("1.0");
                     assertThat(listener, ListenerMatcher.isValid());
                     assertThat(listener.toString(), is("[1.0]"));
                 },
                 () -> {
+                    listener = new TestListener();
                     parseStatement(".0");
                     assertThat(listener, ListenerMatcher.isValid());
                     assertThat(listener.toString(), is("[0.0]"));
                 },
                 () -> {
+                    listener = new TestListener();
                     parseStatement(".1");
                     assertThat(listener, ListenerMatcher.isValid());
                     assertThat(listener.toString(), is("[0.1]"));

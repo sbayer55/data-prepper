@@ -63,7 +63,7 @@ public class TestListener extends DataPrepperStatementBaseListener {
     );
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private ArrayNode statementArray = mapper.createArrayNode();
+    private final ArrayNode statementArray = mapper.createArrayNode();
     private final List<ErrorNode> errorNodeList = new LinkedList<>();
     private final List<Exception> exceptionList = new LinkedList<>();
     private final Stack<ArrayNode> stack = new Stack<>();
@@ -145,19 +145,9 @@ public class TestListener extends DataPrepperStatementBaseListener {
         stack.pop();
     }
 
-    private void resetTestListener() {
-        statementArray = mapper.createArrayNode();
-        errorNodeList.clear();
-        exceptionList.clear();
-        stack.clear();
-        verboseTokenList.clear();
-        verboseString = "";
-    }
-
     @Override
     public void enterStatement(final DataPrepperStatementParser.StatementContext ctx) {
         super.enterStatement(ctx);
-        resetTestListener();
         enterNode(ctx);
     }
 
