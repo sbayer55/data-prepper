@@ -347,6 +347,30 @@ public class LogListener implements DataPrepperStatementListener {
     }
 
     @Override
+    public void enterVariableIdentifier(final DataPrepperStatementParser.VariableIdentifierContext ctx) {
+        LOG.info("{}enterVariableIdentifier: {}", prefix(), ctx.getText());
+        level++;
+    }
+
+    @Override
+    public void exitVariableIdentifier(final DataPrepperStatementParser.VariableIdentifierContext ctx) {
+        level--;
+        LOG.info("{}exitVariableIdentifier: {}", prefix(), ctx.getText());
+    }
+
+    @Override
+    public void enterVariableName(final DataPrepperStatementParser.VariableNameContext ctx) {
+        LOG.info("{}enterVariableName: {}", prefix(), ctx.getText());
+        level++;
+    }
+
+    @Override
+    public void exitVariableName(final DataPrepperStatementParser.VariableNameContext ctx) {
+        level--;
+        LOG.info("{}exitVariableName: {}", prefix(), ctx.getText());
+    }
+
+    @Override
     public void enterLiteral(final DataPrepperStatementParser.LiteralContext ctx) {
         LOG.info("{}enterLiteral: {}", prefix(), ctx.getText());
         level++;

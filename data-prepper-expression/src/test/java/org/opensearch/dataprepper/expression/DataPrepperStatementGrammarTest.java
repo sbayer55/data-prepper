@@ -92,16 +92,16 @@ class DataPrepperStatementGrammarTest {
     }
 
     @Test
-    public void testInCollectionExpression() {
-        parseStatement("2 in [\"1\", 2, 3]");
+    public void testInSetExpression() {
+        parseStatement("2 in {\"1\", 2, 3}");
 
         assertThat(listener, ListenerMatcher.isValid());
         assertThat(listener.toString(), is("[2,'in',['1',2,3]]"));
     }
 
     @Test
-    public void testNotInCollectionExpression() {
-        parseStatement("true not in [false, true or false]");
+    public void testNotInSetExpression() {
+        parseStatement("true not in {false, true or false}");
 
         assertThat(listener, ListenerMatcher.isValid());
         assertThat(listener.toString(), is("[true,'not in',[false,true,'or',false]]"));

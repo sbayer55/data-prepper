@@ -88,6 +88,26 @@ String
     : DOUBLEQUOTE StringCharacters? DOUBLEQUOTE
     ;
 
+fragment
+VariableNameLeadingCharacter
+    : [A-Za-z_]
+    ;
+
+fragment
+VariableNameCharacter
+    : VariableNameLeadingCharacter
+    | [0-9-]
+    ;
+
+fragment
+VariableNameCharacters
+    : VariableNameLeadingCharacter VariableNameCharacter*
+    ;
+
+VariableName
+    : '${' VariableNameCharacters '}'
+    ;
+
 statement
     : expression EOF
     | OTHER {System.err.println("unknown char: " + $OTHER.text);}
@@ -176,6 +196,7 @@ relationalOperator
 
 primary
     : literal
+    | variableIdentifier
     | listInitializer
     | expressionInitializer
     ;
@@ -191,7 +212,15 @@ expressionInitializer
     ;
 
 listInitializer
-    : '[' binaryOperatorExpression (',' binaryOperatorExpression)* ']'
+    : '{' binaryOperatorExpression (',' binaryOperatorExpression)* '}'
+    ;
+
+variableIdentifier
+    : '${' variableName '}'
+    ;
+
+variableName
+    : VariableName
     ;
 
 literal
