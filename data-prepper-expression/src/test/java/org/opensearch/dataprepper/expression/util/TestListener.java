@@ -63,7 +63,7 @@ public class TestListener extends DataPrepperStatementBaseListener {
     );
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private final ArrayNode statementArray = mapper.createArrayNode();
+    private ArrayNode statementArray = mapper.createArrayNode();
     private final List<ErrorNode> errorNodeList = new LinkedList<>();
     private final List<Exception> exceptionList = new LinkedList<>();
     private final Stack<ArrayNode> stack = new Stack<>();
@@ -126,10 +126,6 @@ public class TestListener extends DataPrepperStatementBaseListener {
     }
 
     private void enterNode(final ParserRuleContext ctx) {
-        if (ctx.exception != null) {
-            LOG.warn("Parse Exception {} found on \"{}\"", ctx.exception, ctx.getText());
-            exceptionList.add(ctx.exception);
-        }
         if (stack.empty()) {
             if (!statementArray.isEmpty()) {
                 LOG.error("Stack unexpectedly empty, possible reused listener?");
@@ -149,9 +145,19 @@ public class TestListener extends DataPrepperStatementBaseListener {
         stack.pop();
     }
 
+    private void resetTestListener() {
+        statementArray = mapper.createArrayNode();
+        errorNodeList.clear();
+        exceptionList.clear();
+        stack.clear();
+        verboseTokenList.clear();
+        verboseString = "";
+    }
+
     @Override
     public void enterStatement(final DataPrepperStatementParser.StatementContext ctx) {
         super.enterStatement(ctx);
+        resetTestListener();
         enterNode(ctx);
     }
 
@@ -212,6 +218,10 @@ public class TestListener extends DataPrepperStatementBaseListener {
     @Override
     public void enterEveryRule(final ParserRuleContext ctx) {
         super.enterEveryRule(ctx);
+        if (ctx.exception != null) {
+            LOG.warn("Parse Exception {} found on \"{}\"", ctx.exception, ctx.getText());
+            exceptionList.add(ctx.exception);
+        }
         popVerboseTokens();
         verboseString += "[";
     }

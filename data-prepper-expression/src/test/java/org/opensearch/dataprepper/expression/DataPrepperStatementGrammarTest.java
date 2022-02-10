@@ -64,7 +64,7 @@ class DataPrepperStatementGrammarTest {
         parseStatement("true==false");
 
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[true],'==',[false]]"));
+        assertThat(listener.toString(), is("[true,'==',false]"));
     }
 
     @Test
@@ -72,7 +72,7 @@ class DataPrepperStatementGrammarTest {
         parseStatement("false and true");
 
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[false],'and',[true]]"));
+        assertThat(listener.toString(), is("[false,'and',true]"));
     }
 
     @Test
@@ -80,7 +80,7 @@ class DataPrepperStatementGrammarTest {
         parseStatement("false and true or true");
 
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[[false],'and',[true]],'or',[true]]"));
+        assertThat(listener.toString(), is("[false,'and',true,'or',true]"));
     }
 
     @Test
@@ -88,7 +88,7 @@ class DataPrepperStatementGrammarTest {
         parseStatement("false and (false or true)");
 
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[false],'and',[[[false],'or',[true]]]]"));
+        assertThat(listener.toString(), is("[false,'and',[false,'or',true]]"));
     }
 
     @Test
@@ -96,7 +96,7 @@ class DataPrepperStatementGrammarTest {
         parseStatement("2 in [\"1\", 2, 3]");
 
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[2],'in',['[',['1'],',',[2],',',[3],']']]"));
+        assertThat(listener.toString(), is("[2,'in',['1',2,3]]"));
     }
 
     @Test
@@ -104,35 +104,35 @@ class DataPrepperStatementGrammarTest {
         parseStatement("true not in [false, true or false]");
 
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[true],'not in',['[',[false],',',[[true],'or',[false]],']']]"));
+        assertThat(listener.toString(), is("[true,'not in',[false,true,'or',false]]"));
     }
 
     @Test
     public void testNestedParenthesisExpression() {
         parseStatement("(1==4)or((2)!=(3==3))");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[[[1],'==',[4]]],'or',[[[[2]],'!=',[[[3],'==',[3]]]]]]"));
+        assertThat(listener.toString(), is("[[1,'==',4],'or',[[2],'!=',[3,'==',3]]]"));
     }
 
     @Test
     public void testJsonPointerExpression() {
         parseStatement("/a/b/c == true");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[['/a/b/c'],'==',[true]]"));
+        assertThat(listener.toString(), is("['/a/b/c','==',true]"));
     }
 
     @Test
     public void testStringExpression() {
         parseStatement("\"Hello World\" == 42");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[['Hello World'],'==',[42]]"));
+        assertThat(listener.toString(), is("['Hello World','==',42]"));
     }
 
     @Test
     public void testEscapeStringExpression() {
         parseStatement("\"Hello \\\"World\\\"\" == 42");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[['Hello \\\"World\\\"'],'==',[42]]"));
+        assertThat(listener.toString(), is("['Hello \\\"World\\\"','==',42]"));
     }
 
     @Test
@@ -146,14 +146,14 @@ class DataPrepperStatementGrammarTest {
     public void testRelationalExpression() {
         parseStatement("1 < 2");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[1],'<',[2]]"));
+        assertThat(listener.toString(), is("[1,'<',2]"));
     }
 
     @Test
     public void testMultipleRelationalExpression() {
         parseStatement("1 < 2 or 3 <= 4 or 5 > 6 or 7 >= 8");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[[[[[1],'<',[2]],'or',[[3],'<=',[4]]],'or',[[5],'>',[6]]],'or',[[7],'>=',[8]]]"));
+        assertThat(listener.toString(), is("[1,'<',2,'or',3,'<=',4,'or',5,'>',6,'or',7,'>=',8]"));
     }
 
     @Test
@@ -195,14 +195,14 @@ class DataPrepperStatementGrammarTest {
     public void testRegexEqualOperator() {
         parseStatement("\"foo\"=~\"[A-Z]*\"");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[['foo'],'=~',['[A-Z]*']]"));
+        assertThat(listener.toString(), is("['foo','=~',['[A-Z]*']]"));
     }
 
     @Test
     public void testRegexNotEqualOperator() {
         parseStatement("\"foo\"!~\"[A-Z]*\"");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[['foo'],'!~',['[A-Z]*']]"));
+        assertThat(listener.toString(), is("['foo','!~',['[A-Z]*']]"));
     }
     @Test
     public void testFloatingPointNumber() {
@@ -273,6 +273,6 @@ class DataPrepperStatementGrammarTest {
     public void testNotOperator() {
         parseStatement("not (5 not in [1]) or not \"in\"");
         assertThat(listener, ListenerMatcher.isValid());
-        assertThat(listener.toString(), is("[['not',[[[5],'not in',['[',[1],']']]]],'or',['not',['in']]]"));
+        assertThat(listener.toString(), is("['not',[5,'not in',[1]],'or','not','in']"));
     }
 }

@@ -90,17 +90,88 @@ String
 
 statement
     : expression EOF
+    | OTHER {System.err.println("unknown char: " + $OTHER.text);}
     ;
 
 expression
+    : binaryOperatorExpression
+    ;
+
+binaryOperatorExpression
+    : conditionalExpression
+    ;
+
+conditionalExpression
+    : conditionalExpression conditionalOperator equalityOperatorExpression
+    | equalityOperatorExpression
+    ;
+
+equalityOperatorExpression
+    : equalityOperatorExpression binaryOperator regexOperatorExpression
+    | regexOperatorExpression
+    ;
+
+regexOperatorExpression
+    : regexOperatorExpression regexEqualityOperator regexPattern
+    | relationalOperatorExpression
+    ;
+
+relationalOperatorExpression
+    : relationalOperatorExpression relationalOperator listOperatorExpression
+    | listOperatorExpression
+    ;
+
+listOperatorExpression
+    : listOperatorExpression listOperator listInitializer
+    | unaryOperatorExpression
+    ;
+
+unaryOperatorExpression
     : primary
-    | 'not' expression
-    | expression op=('in' | 'not in') listInitializer
-    | expression op=('<' | '<=' | '>' | '>=') expression
-    | expression op=('=~' | '!~') regexPattern
-    | expression op=('==' | '!=') expression
-    | expression op=('and' | 'or') expression
-    | OTHER {System.err.println("unknown char: " + $OTHER.text);}
+    | listInitializer
+    | regexPattern
+    | unaryNotOperatorExpression
+    ;
+
+unaryNotOperatorExpression
+    : unaryOperator primary
+    ;
+
+binaryOperator
+    : relationalOperator
+    | equalityOperator
+    ;
+
+regexEqualityOperator
+    : '=~'
+    | '!~'
+    ;
+
+listOperator
+    : 'in'
+    | 'not in'
+    ;
+
+
+conditionalOperator
+    : 'and'
+    | 'or'
+    ;
+
+unaryOperator
+    : 'not'
+    ;
+
+equalityOperator
+    : '=='
+    | '!='
+    ;
+
+relationalOperator
+    : '<'
+    | '<='
+    | '>'
+    | '>='
     ;
 
 primary
@@ -120,7 +191,7 @@ expressionInitializer
     ;
 
 listInitializer
-    : '[' expression (',' expression)* ']'
+    : '[' binaryOperatorExpression (',' binaryOperatorExpression)* ']'
     ;
 
 literal
