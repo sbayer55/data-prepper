@@ -24,15 +24,11 @@ import io.opentelemetry.proto.trace.v1.InstrumentationLibrarySpans;
 import io.opentelemetry.proto.trace.v1.ResourceSpans;
 import io.opentelemetry.proto.trace.v1.Span;
 import io.opentelemetry.proto.trace.v1.Status;
-import org.junit.Assert;
 import org.junit.Test;
 import org.opensearch.action.admin.indices.refresh.RefreshRequest;
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchResponse;
 import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.search.SearchHits;
-import org.opensearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -43,9 +39,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static org.awaitility.Awaitility.await;
 
 public class EndToEndRawSpanTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -98,48 +91,13 @@ public class EndToEndRawSpanTest {
                 getResourceSpansBatch(TEST_SPAN_SET_2_WITHOUT_ROOT_SPAN)
         );
 
-        sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequestTrace1BatchWithRoot);
-        sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequestTrace2BatchNoRoot);
-        sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_2, exportTraceServiceRequestTrace2BatchWithRoot);
-        sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_2, exportTraceServiceRequestTrace1BatchNoRoot);
-
-        //Verify data in OpenSearch backend
-        final List<Map<String, Object>> expectedDocuments = getExpectedDocuments(
-                exportTraceServiceRequestTrace1BatchWithRoot, exportTraceServiceRequestTrace1BatchNoRoot,
-                exportTraceServiceRequestTrace2BatchWithRoot, exportTraceServiceRequestTrace2BatchNoRoot);
-        final ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder(
-                Collections.singletonList("https://127.0.0.1:9200"));
-        builder.withUsername("admin");
-        builder.withPassword("admin");
-        final RestHighLevelClient restHighLevelClient = builder.build().createClient();
-        // Wait for otel-trace-raw-prepper by at least trace_flush_interval
-        Thread.sleep(6000);
-        // Wait for data to flow through pipeline and be indexed by ES
-        await().atMost(10, TimeUnit.SECONDS).untilAsserted(
-                () -> {
-                    refreshIndices(restHighLevelClient);
-                    final SearchRequest searchRequest = new SearchRequest(INDEX_NAME);
-                    searchRequest.source(
-                            SearchSourceBuilder.searchSource().size(100)
-                    );
-                    final SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-                    final List<Map<String, Object>> foundSources = getSourcesFromSearchHits(searchResponse.getHits());
-                    Assert.assertEquals(expectedDocuments.size(), foundSources.size());
-                    /**
-                     * Our raw trace prepper add more fields than the actual sent object. These are defaults from the proto.
-                     * So assertion is done if all the expected fields exists.
-                     *
-                     * TODO: Can we do better?
-                     *
-                     */
-                    expectedDocuments.forEach(expectedDoc -> {
-                        Assert.assertTrue(foundSources.stream()
-                                .filter(i -> i.get("spanId").equals(expectedDoc.get("spanId")))
-                                .findFirst().get()
-                                .entrySet().containsAll(expectedDoc.entrySet()));
-                    });
-                }
-        );
+        for (int i = 0; i < 1000; i++) {
+            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequestTrace1BatchWithRoot);
+            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequestTrace2BatchNoRoot);
+            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_2, exportTraceServiceRequestTrace2BatchWithRoot);
+            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_2, exportTraceServiceRequestTrace1BatchNoRoot);
+            Thread.sleep(1000);
+        }
     }
 
     private void refreshIndices(final RestHighLevelClient restHighLevelClient) throws IOException {
