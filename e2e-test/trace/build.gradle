@@ -224,21 +224,21 @@ task rawSpanCompatibilityEndToEndTest(type: Test) {
 
 task serviceMapEndToEndTest(type: Test) {
     dependsOn build
-    dependsOn startOpenSearchDockerContainer
-    def createDataPrepper1Task = createDataPrepperDockerContainer(
-            "serviceMapDataPrepper1", "dataprepper1", 21890, 4900, "/app/${SERVICE_MAP_PIPELINE_YAML}")
-    def createDataPrepper2Task = createDataPrepperDockerContainer(
-            "serviceMapDataPrepper2", "dataprepper2", 21891, 4901, "/app/${SERVICE_MAP_PIPELINE_YAML}")
-    def startDataPrepper1Task = startDataPrepperDockerContainer(createDataPrepper1Task as DockerCreateContainer)
-    def startDataPrepper2Task = startDataPrepperDockerContainer(createDataPrepper2Task as DockerCreateContainer)
-    dependsOn startDataPrepper1Task
-    dependsOn startDataPrepper2Task
-    startDataPrepper1Task.mustRunAfter 'startOpenSearchDockerContainer'
-    startDataPrepper2Task.mustRunAfter 'startOpenSearchDockerContainer'
-    // wait for data-preppers to be ready
-    doFirst {
-        sleep(10*1000)
-    }
+//    dependsOn startOpenSearchDockerContainer
+//    def createDataPrepper1Task = createDataPrepperDockerContainer(
+//            "serviceMapDataPrepper1", "dataprepper1", 21890, 4900, "/app/${SERVICE_MAP_PIPELINE_YAML}")
+//    def createDataPrepper2Task = createDataPrepperDockerContainer(
+//            "serviceMapDataPrepper2", "dataprepper2", 21891, 4901, "/app/${SERVICE_MAP_PIPELINE_YAML}")
+//    def startDataPrepper1Task = startDataPrepperDockerContainer(createDataPrepper1Task as DockerCreateContainer)
+//    def startDataPrepper2Task = startDataPrepperDockerContainer(createDataPrepper2Task as DockerCreateContainer)
+//    dependsOn startDataPrepper1Task
+//    dependsOn startDataPrepper2Task
+//    startDataPrepper1Task.mustRunAfter 'startOpenSearchDockerContainer'
+//    startDataPrepper2Task.mustRunAfter 'startOpenSearchDockerContainer'
+//    // wait for data-preppers to be ready
+//    doFirst {
+//        sleep(10*1000)
+//    }
 
     description = 'Runs the service-map integration tests.'
     group = 'verification'
@@ -249,14 +249,14 @@ task serviceMapEndToEndTest(type: Test) {
         includeTestsMatching "com.amazon.dataprepper.integration.trace.EndToEndServiceMapTest*"
     }
 
-    finalizedBy stopOpenSearchDockerContainer
-    def stopDataPrepper1Task = stopDataPrepperDockerContainer(startDataPrepper1Task as DockerStartContainer)
-    def stopDataPrepper2Task = stopDataPrepperDockerContainer(startDataPrepper2Task as DockerStartContainer)
-    finalizedBy stopDataPrepper1Task
-    finalizedBy stopDataPrepper2Task
-    finalizedBy removeDataPrepperDockerContainer(stopDataPrepper1Task as DockerStopContainer)
-    finalizedBy removeDataPrepperDockerContainer(stopDataPrepper2Task as DockerStopContainer)
-    finalizedBy removeDataPrepperNetwork
+//    finalizedBy stopOpenSearchDockerContainer
+//    def stopDataPrepper1Task = stopDataPrepperDockerContainer(startDataPrepper1Task as DockerStartContainer)
+//    def stopDataPrepper2Task = stopDataPrepperDockerContainer(startDataPrepper2Task as DockerStartContainer)
+//    finalizedBy stopDataPrepper1Task
+//    finalizedBy stopDataPrepper2Task
+//    finalizedBy removeDataPrepperDockerContainer(stopDataPrepper1Task as DockerStopContainer)
+//    finalizedBy removeDataPrepperDockerContainer(stopDataPrepper2Task as DockerStopContainer)
+//    finalizedBy removeDataPrepperNetwork
 }
 
 dependencies {
