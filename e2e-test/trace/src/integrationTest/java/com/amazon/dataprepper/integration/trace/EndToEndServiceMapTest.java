@@ -47,7 +47,7 @@ public class EndToEndServiceMapTest {
     private static final String TEST_TRACEID_1 = "ABC";
     private static final String TEST_TRACEID_2 = "CBA";
     private static final int DATA_PREPPER_PORT_1 = 21890;
-    private static final int DATA_PREPPER_PORT_2 = 21891;
+    private static final int DATA_PREPPER_PORT_2 = 21890;
     private static final List<EndToEndTestSpan> TEST_TRACE_1_BATCH_1 = Arrays.asList(
             EndToEndTestSpan.TRACE_1_ROOT_SPAN, EndToEndTestSpan.TRACE_1_SPAN_2, EndToEndTestSpan.TRACE_1_SPAN_5,
             EndToEndTestSpan.TRACE_1_SPAN_6, EndToEndTestSpan.TRACE_1_SPAN_7, EndToEndTestSpan.TRACE_1_SPAN_10);
@@ -82,16 +82,6 @@ public class EndToEndServiceMapTest {
         builder.withPassword("admin");
         final RestHighLevelClient restHighLevelClient = builder.build().createClient();
 
-        // Wait for service map prepper by 2 * window_duration
-        Thread.sleep(6000);
-        await().atMost(20, TimeUnit.SECONDS).untilAsserted(
-                () -> {
-                    final List<Map<String, Object>> foundSources = getSourcesFromIndex(restHighLevelClient, SERVICE_MAP_INDEX_NAME);
-                    foundSources.forEach(source -> source.remove("hashId"));
-                    Assert.assertEquals(8, foundSources.size());
-                    Assert.assertTrue(foundSources.containsAll(possibleEdges) && possibleEdges.containsAll(foundSources));
-                }
-        );
 
         // Resend the same batch of spans (No new edges should be created)
         sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequest11);
@@ -110,16 +100,6 @@ public class EndToEndServiceMapTest {
         final List<EndToEndTestSpan> testDataSet2 = Stream.of(TEST_TRACE_2_BATCH_1, TEST_TRACE_2_BATCH_2)
                 .flatMap(Collection::stream).collect(Collectors.toList());
         possibleEdges.addAll(getPossibleEdges(TEST_TRACEID_2, testDataSet2));
-        // Wait for service map prepper by 2 * window_duration
-        Thread.sleep(6000);
-        await().atMost(20, TimeUnit.SECONDS).untilAsserted(
-                () -> {
-                    final List<Map<String, Object>> foundSources = getSourcesFromIndex(restHighLevelClient, SERVICE_MAP_INDEX_NAME);
-                    foundSources.forEach(source -> source.remove("hashId"));
-                    Assert.assertEquals(12, foundSources.size());
-                    Assert.assertTrue(foundSources.containsAll(possibleEdges) && possibleEdges.containsAll(foundSources));
-                }
-        );
     }
 
     private void refreshIndices(final RestHighLevelClient restHighLevelClient) throws IOException {

@@ -7,7 +7,6 @@ package com.amazon.dataprepper.integration.trace;
 
 
 import com.amazon.dataprepper.plugins.prepper.oteltracegroup.model.TraceGroup;
-import com.amazon.dataprepper.plugins.sink.opensearch.ConnectionConfiguration;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.ByteString;
@@ -35,7 +34,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +42,7 @@ public class EndToEndRawSpanTest {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeReference<Map<String, Object>>() {};
     private static final int DATA_PREPPER_PORT_1 = 21890;
-    private static final int DATA_PREPPER_PORT_2 = 21891;
+    private static final int DATA_PREPPER_PORT_2 = 21890;
 
     private static final Map<String, TraceGroup> TEST_TRACEID_TO_TRACE_GROUP = new HashMap<String, TraceGroup>() {{
        put(Hex.toHexString(EndToEndTestSpan.TRACE_1_ROOT_SPAN.traceId.getBytes()),
@@ -91,13 +89,10 @@ public class EndToEndRawSpanTest {
                 getResourceSpansBatch(TEST_SPAN_SET_2_WITHOUT_ROOT_SPAN)
         );
 
-        for (int i = 0; i < 1000; i++) {
-            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequestTrace1BatchWithRoot);
-            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequestTrace2BatchNoRoot);
-            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_2, exportTraceServiceRequestTrace2BatchWithRoot);
-            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_2, exportTraceServiceRequestTrace1BatchNoRoot);
-            Thread.sleep(1000);
-        }
+        sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequestTrace1BatchWithRoot);
+//            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_1, exportTraceServiceRequestTrace2BatchNoRoot);
+//            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_2, exportTraceServiceRequestTrace2BatchWithRoot);
+//            sendExportTraceServiceRequestToSource(DATA_PREPPER_PORT_2, exportTraceServiceRequestTrace1BatchNoRoot);
     }
 
     private void refreshIndices(final RestHighLevelClient restHighLevelClient) throws IOException {
