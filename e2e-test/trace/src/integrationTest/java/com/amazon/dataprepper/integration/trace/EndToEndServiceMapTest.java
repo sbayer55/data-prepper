@@ -46,7 +46,7 @@ import static org.awaitility.Awaitility.await;
 public class EndToEndServiceMapTest {
     private static final String TEST_TRACEID_1 = "ABC";
     private static final String TEST_TRACEID_2 = "CBA";
-    private static final int DATA_PREPPER_PORT_1 = 21890;
+    private static final int DATA_PREPPER_PORT_1 = 10000;
     private static final int DATA_PREPPER_PORT_2 = 21890;
     private static final List<EndToEndTestSpan> TEST_TRACE_1_BATCH_1 = Arrays.asList(
             EndToEndTestSpan.TRACE_1_ROOT_SPAN, EndToEndTestSpan.TRACE_1_SPAN_2, EndToEndTestSpan.TRACE_1_SPAN_5,
@@ -57,7 +57,6 @@ public class EndToEndServiceMapTest {
     private static final List<EndToEndTestSpan> TEST_TRACE_2_BATCH_1 = Arrays.asList(EndToEndTestSpan.TRACE_2_ROOT_SPAN,
             EndToEndTestSpan.TRACE_2_SPAN_2, EndToEndTestSpan.TRACE_2_SPAN_4, EndToEndTestSpan.TRACE_2_SPAN_5);
     private static final List<EndToEndTestSpan> TEST_TRACE_2_BATCH_2 = Collections.singletonList(EndToEndTestSpan.TRACE_2_SPAN_3);
-    private static final String SERVICE_MAP_INDEX_NAME = "otel-v1-apm-service-map";
 
     @Test
     public void testPipelineEndToEnd() throws IOException, InterruptedException {
@@ -76,11 +75,6 @@ public class EndToEndServiceMapTest {
         final List<EndToEndTestSpan> testDataSet1 = Stream.of(TEST_TRACE_1_BATCH_1, TEST_TRACE_1_BATCH_2)
                 .flatMap(Collection::stream).collect(Collectors.toList());
         final List<Map<String, Object>> possibleEdges = getPossibleEdges(TEST_TRACEID_1, testDataSet1);
-        final ConnectionConfiguration.Builder builder = new ConnectionConfiguration.Builder(
-                Collections.singletonList("https://127.0.0.1:9200"));
-        builder.withUsername("admin");
-        builder.withPassword("admin");
-        final RestHighLevelClient restHighLevelClient = builder.build().createClient();
 
 
         // Resend the same batch of spans (No new edges should be created)
